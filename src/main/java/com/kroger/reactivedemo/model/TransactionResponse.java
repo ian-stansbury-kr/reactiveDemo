@@ -16,4 +16,11 @@ public class TransactionResponse {
     private String name;
 
     private Integer httpCode;
+
+    public Transaction toModel(TransactionResponse transactionResponse){
+        return Transaction.builder()
+            .name(transactionResponse.name)
+            .responseBody(transactionResponse.toString())
+            .build();
+    }
 }

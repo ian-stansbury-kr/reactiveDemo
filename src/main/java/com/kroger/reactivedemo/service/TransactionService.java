@@ -29,7 +29,10 @@ public class TransactionService {
     }
 
     public Flux<TransactionResponse> authorizeTransaction(Transaction transaction){
-        return authorizationClient.getAuthorizationResponse(transaction);
+        return authorizationClient.getAuthorizationResponse(transaction)
+            .map(response -> response.toModel(response))
+            .flatMap(transactionToSave -> createTransactions(transactionToSave))
+            .map(transactionToReturn -> transactionToReturn.fromModel(transactionToReturn));
     }
 
     /**
