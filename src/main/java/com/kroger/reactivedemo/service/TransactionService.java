@@ -1,8 +1,10 @@
 package com.kroger.reactivedemo.service;
 
+import com.kroger.reactivedemo.client.AuthorizationClient;
 import com.kroger.reactivedemo.exception.model.TransactionCreationException;
 import com.kroger.reactivedemo.exception.model.TransactionDbException;
 import com.kroger.reactivedemo.model.Transaction;
+import com.kroger.reactivedemo.model.TransactionResponse;
 import com.kroger.reactivedemo.repository.TransactionRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -10,6 +12,8 @@ import reactor.core.publisher.Mono;
 public class TransactionService {
 
     private TransactionRepository transactionRepository;
+
+    private AuthorizationClient authorizationClient;
 
     /**
      * Throws new error is empty, also logging
@@ -22,6 +26,10 @@ public class TransactionService {
             .doFirst(() -> System.out.println("Looking up transaction"))
             .doOnError(ex -> System.out.println("Failed to look up transaction"))
             .doFinally(signalType -> System.out.println("Looked up transaction"));
+    }
+
+    public Flux<TransactionResponse> authorizeTransaction(Transaction transaction){
+        return authorizationClient.getAuthorizationResponse(transaction);
     }
 
     /**
