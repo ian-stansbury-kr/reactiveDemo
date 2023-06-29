@@ -56,4 +56,20 @@ public class AuthorizationClient {
             .doOnNext(cr -> System.out.println("Got a response " + cr));
 
     }
+
+    public Mono<TransactionResponse> getAuthorizationResponseWithExchange(Transaction transaction){
+        return webClient.post()
+            .uri(ConfigConstants.authEndpoint)
+            .body(BodyInserters.fromValue(transaction))
+            .exchangeToMono(
+            response ->
+                !response.statusCode().isError() ?
+                    response.bodyToMono(TransactionResponse.class) :
+                    response.bodyToMono(Exception.class)
+                        .flatMap(ex -> Mono.error(new WebClientResponseException("bad "
+                            + "time", ex))))
+            .doFirst(() -> System.out.println("calling fake service"))
+            .doOnNext(cr -> System.out.println("Got a response " + cr));
+
+    }
 }
