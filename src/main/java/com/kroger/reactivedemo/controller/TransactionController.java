@@ -29,6 +29,6 @@ public class TransactionController {
 
     @PostMapping
     public Mono<Transaction> createTransaction(@RequestBody Transaction transaction){
-        return transactionService.createTransactions(transaction);
+        return transactionService.createTransaction(transaction);
     }
 }

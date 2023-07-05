@@ -6,9 +6,11 @@ import com.kroger.reactivedemo.exception.model.TransactionDbException;
 import com.kroger.reactivedemo.model.Transaction;
 import com.kroger.reactivedemo.model.TransactionResponse;
 import com.kroger.reactivedemo.repository.TransactionRepository;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Component
 public class TransactionService {
 
     private TransactionRepository transactionRepository;
@@ -28,10 +30,10 @@ public class TransactionService {
             .doFinally(signalType -> System.out.println("Looked up transaction"));
     }
 
-    public Flux<TransactionResponse> authorizeTransaction(Transaction transaction){
+    public Mono<TransactionResponse> authorizeTransaction(Transaction transaction){
         return authorizationClient.getAuthorizationResponse(transaction)
             .map(response -> response.toModel(response))
-            .flatMap(transactionToSave -> createTransactions(transactionToSave))
+            .flatMap(transactionToSave -> createTransaction(transactionToSave))
             .map(transactionToReturn -> transactionToReturn.fromModel(transactionToReturn));
     }
 
@@ -49,7 +51,7 @@ public class TransactionService {
      * @param transactionRequest
      * @return
      */
-    public Mono<Transaction> createTransactions(Transaction transactionRequest){
+    public Mono<Transaction> createTransaction(Transaction transactionRequest){
         return Mono.just(transactionRequest)
                 .flatMap(transaction -> transactionRepository.save(transaction)
                     .onErrorMap(ex -> new TransactionCreationException(ex.getMessage())));
