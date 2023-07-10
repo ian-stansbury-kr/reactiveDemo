@@ -12,14 +12,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/transaction")
+@RequestMapping("/transactions")
 public class TransactionController {
 
     private TransactionService transactionService;
 
-    @GetMapping("/{id}")
-    public Mono<Transaction> getTransactionById(@PathVariable String id){
-        return transactionService.getOneTransaction(id);
+    @GetMapping("/{ids}")
+    public Mono<Transaction> getTransactionById(@PathVariable String ids){
+        return transactionService.getOneTransaction(ids);
     }
 
     @GetMapping
